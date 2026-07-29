@@ -48,12 +48,19 @@ app.post("/webhook", async (req, res) => {
   // WhatsApp-a dərhal 200 qaytarmaq lazımdır, yoxsa təkrar-təkrar göndərir
   res.sendStatus(200);
 
+  // DİAQNOSTİKA: hər gələn sorğunu tam loglayırıq ki, problemi tapaq
+  console.log("=== Webhook POST alındı ===");
+  console.log(JSON.stringify(req.body, null, 2));
+
   try {
     const entry = req.body.entry?.[0];
     const change = entry?.changes?.[0];
     const message = change?.value?.messages?.[0];
 
-    if (!message) return; // status yeniləməsi və ya digər event ola bilər, mesaj deyil
+    if (!message) {
+      console.log("Mesaj tapılmadı (status yeniləməsi ola bilər)");
+      return;
+    }
 
     const from = message.from; // göndərənin nömrəsi
     const text = message.text?.body;
